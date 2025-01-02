@@ -52,7 +52,7 @@ class WeatherService {
 
   // TODO: Create fetchLocationData method
   private async fetchLocationData(query: string) {
-    console.log( `${this.baseURL}/geo/1.0/direct?${query}&appid=${this.apiKey}`);
+    console.log(`${this.baseURL}/geo/1.0/direct?${query}&appid=${this.apiKey}`);
     const response = await fetch(
       `${this.baseURL}/geo/1.0/direct?${query}&appid=${this.apiKey}`
     );
@@ -102,14 +102,17 @@ class WeatherService {
   }
 
   // TODO: Build parseCurrentWeather method
+
   private parseCurrentWeather(response: any) {
     if (!response || !response.list)
       throw new Error("Unable to parse current weather");
-    if (response.list.length == 0) throw new Error("Weather data is empty");
+    if (response.list.length === 0) throw new Error("Weather data is empty");
 
     const firstElement = response.list[0];
     const today = new Date();
-    const formattedDate = today.toISOString().split("T")[0];
+    const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
 
     const weatherData: Weather = {
       city: this.cityName,
@@ -124,6 +127,7 @@ class WeatherService {
   }
 
   // TODO: Complete buildForecastArray method
+
   private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
     let forecastArray: Weather[] = [];
 
@@ -136,10 +140,11 @@ class WeatherService {
       const tomorrow = new Date(today);
       tomorrow.setDate(today.getDate() + 1);
       console.log(tomorrow);
+
       for (let i = 0; i < 5; i++) {
         const date = new Date(tomorrow);
-        date.setDate(date.getDate() + i);
-        const formattedDate = date.toISOString().split("T")[0];
+        date.setDate(tomorrow.getDate() + i);
+        const formattedDate = date.toLocaleDateString("en-CA"); // yyyy-mm-dd in local time
         dates.push(formattedDate);
       }
       return dates;
